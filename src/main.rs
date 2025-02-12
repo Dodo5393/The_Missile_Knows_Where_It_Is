@@ -1,9 +1,11 @@
 use ggez::glam::Vec2;
 use ggez::{event, graphics, Context, GameResult};
+use std::fs::OpenOptions;
+use std::io::Write;
 
 mod config;
 
-use config::{POP_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_POS}; // Importowanie stałych
+use config::{SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_POS}; // Importowanie stałych
 
 mod dna;
 mod population;
@@ -27,13 +29,24 @@ impl GameState {
             target_image,
         })
     }
+    fn save_generation_data(&self) -> GameResult {
+        let mut file = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open("data.csv")?;
+
+        let success_rate = self.population.calculate_success();
+        writeln!(file, "{},{}", self.population.generation, success_rate)?;
+
+        Ok(())
+    }
 }
 
-// ✅ Poprawna implementacja EventHandler dla GameState (MUSI być poza `impl GameState`)
 impl event::EventHandler<ggez::GameError> for GameState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
         // Aktualizacja populacji rakiet
         if self.population.all_done() {
+            self.save_generation_data();
             self.population.evaluate();
             self.population.evolve();
         } else {

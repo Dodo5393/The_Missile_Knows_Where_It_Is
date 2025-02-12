@@ -67,6 +67,11 @@ impl Population {
         self.generation += 1;
     }
 
+    pub fn calculate_success(&self) -> usize {
+        ((self.rockets.iter().filter(|r| r.hit_target).count() as f64 / POP_SIZE as f64) * 100.0)
+            as usize
+    }
+
     fn select_parent<R: Rng>(&self, rng: &mut R) -> &Rocket {
         if self.mating_pool.is_empty() {
             // Losowy rodzic jeśli pula jest pusta

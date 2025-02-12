@@ -1,6 +1,6 @@
 pub const POP_SIZE: usize = 200;
 pub const LIFESPAN: usize = 400;
-pub const MUTATION_RATE: f64 = 0.005;
+pub const MUTATION_RATE: f64 = 0.01;
 pub const FORCE_MAGNITUDE: f64 = 0.3;
 pub const START_POS: (f64, f64) = (400.0, 400.0);
 pub const TARGET_POS: (f64, f64) = (100.0, 100.0);
