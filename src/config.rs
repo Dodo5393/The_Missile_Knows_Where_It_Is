@@ -1,0 +1,9 @@
+pub const POP_SIZE: usize = 100;
+pub const LIFESPAN: usize = 400;
+pub const MUTATION_RATE: f64 = 0.01;
+pub const FORCE_MAGNITUDE: f64 = 0.1;
+pub const START_POS: (f64, f64) = (400.0, 400.0);
+pub const TARGET_POS: (f64, f64) = (100.0, 100.0);
+pub const SCREEN_WIDTH: i32 = 800;
+pub const SCREEN_HEIGHT: i32 = 600;
+pub const TARGET_RADIUS: f64 = 20.0;
