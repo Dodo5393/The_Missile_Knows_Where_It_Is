@@ -1,8 +1,9 @@
 use crate::config;
 use crate::dna::DNA;
-use config::{LIFESPAN, START_POS, TARGET_POS};
+use config::{LIFESPAN, SCREEN_HEIGHT, SCREEN_WIDTH, START_POS, TARGET_POS};
+use std::collections::HashSet;
 
-const MAX_VELOCITY: f64 = 60.0;
+const MAX_VELOCITY: f64 = 30.0;
 
 pub struct Rocket {
     pub position: (f64, f64),
@@ -51,7 +52,7 @@ impl Rocket {
         self.fitness
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, obstacles: &HashSet<(i32, i32)>) {
         //checking if rocket hits target
         let dx = self.position.0 - config::TARGET_POS.0;
         let dy = self.position.1 - config::TARGET_POS.1;
@@ -67,6 +68,14 @@ impl Rocket {
             || self.position.0 > config::SCREEN_WIDTH as f64
             || self.position.1 > config::SCREEN_HEIGHT as f64
         {
+            self.crashed = true;
+        }
+
+        // Sprawdź kolizje z optymalizacją przestrzenną
+        let grid_x = (self.position.0 as i32 / 5) * 5;
+        let grid_y = (self.position.1 as i32 / 5) * 5;
+
+        if obstacles.contains(&(grid_x, grid_y)) {
             self.crashed = true;
         }
 

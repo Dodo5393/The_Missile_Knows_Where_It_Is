@@ -7,9 +7,11 @@ name = "The_Missile_Knows_Where_It_Is"
 version = "0.1.0"
 dependencies = [
  "ggez",
+ "line_drawing",
  "plotters",
  "plotters-bitmap",
  "rand",
+ "rayon",
 ]
 
 [[package]]
@@ -251,6 +253,12 @@ dependencies = [
  "block-sys",
  "objc2-encode",
 ]
+
+[[package]]
+name = "bresenham"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfc1116225f66d2ea341a26503f83a6b1205070a6f7199ce1f1550ead91f6fd7"
 
 [[package]]
 name = "bumpalo"
@@ -1415,6 +1423,15 @@ checksum = "3c8469b4a23b962c1396b9b451dda50ef5b283e8dd309d69033475fa9b334324"
 dependencies = [
  "libc",
  "pkg-config",
+]
+
+[[package]]
+name = "line_drawing"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "78293e7b98ae2a8bf6fdc4669f605bedd70c637b6815ae20cb5bf6b7cf233496"
+dependencies = [
+ "bresenham",
 ]
 
 [[package]]

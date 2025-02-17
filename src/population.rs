@@ -2,6 +2,8 @@ use crate::config::{LIFESPAN, MUTATION_RATE, POP_SIZE};
 use crate::dna::DNA;
 use crate::rocket::Rocket;
 use rand::prelude::*;
+use rayon::prelude::*;
+use std::collections::HashSet;
 
 pub struct Population {
     pub rockets: Vec<Rocket>,
@@ -18,10 +20,10 @@ impl Population {
             mating_pool: Vec::new(),
         }
     }
-    pub fn update(&mut self) {
-        for rocket in &mut self.rockets {
-            rocket.update();
-        }
+    pub fn update(&mut self, obstacles: &HashSet<(i32, i32)>) {
+        self.rockets.par_iter_mut().for_each(|rocket| {
+            rocket.update(obstacles);
+        });
     }
 
     pub fn evaluate(&mut self) {
