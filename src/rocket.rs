@@ -3,9 +3,10 @@ use crate::dna::DNA;
 use config::{LIFESPAN, SCREEN_HEIGHT, SCREEN_WIDTH, START_POS, TARGET_POS};
 use std::collections::HashSet;
 
-const MAX_VELOCITY: f64 = 30.0;
+const MAX_VELOCITY: f64 = 60.0;
 
 pub struct Rocket {
+    pub min_distance: f64,
     pub position: (f64, f64),
     pub velocity: (f64, f64),
     acceleration: (f64, f64),
@@ -19,6 +20,7 @@ pub struct Rocket {
 impl Rocket {
     pub fn new(dna: DNA) -> Self {
         Self {
+            min_distance: std::f64::MAX,
             position: START_POS,
             velocity: (0.0, 0.0),
             acceleration: (0.0, -0.1),
@@ -34,21 +36,26 @@ impl Rocket {
         self.acceleration.1 += force.1 * 2.0;
     }
     pub fn calculate_fitness(&mut self) -> f64 {
-        let dx = TARGET_POS.0 - self.position.0;
-        let dy = TARGET_POS.1 - self.position.1;
-        let distance = (dx.powi(2) + dy.powi(2)).sqrt();
+        // Obliczamy bazowy fitness na podstawie minimalnej odległości do celu
+        let mut fitness = 1.0 / (self.min_distance + 1.0);
 
+        // Dodatkowo możemy uwzględnić, jak szybko rakieta osiągnęła minimalną odległość
+        // Przyjmijmy, że wcześniejsze osiągnięcie lepszego min_distance daje wyższy wynik
+        // Można na przykład użyć współczynnika malejącego wraz z liczbą kroków:
+        let time_factor = 1.0 / ((self.step as f64 / LIFESPAN as f64) + 1.0);
+        fitness *= time_factor;
+
+        // W przypadku trafienia celu premiujemy bardzo mocno – im szybciej, tym lepiej
         if self.hit_target {
-            // Jeśli rakieta trafiła w cel, dostaje bardzo wysoki wynik
-            self.fitness = 1_000.0 / (self.step as f64 + 1.0); // Więcej punktów za szybsze dotarcie
-        } else if self.crashed {
-            // Jeśli rakieta się rozbiła, dostaje bardzo niski wynik
-            self.fitness = 0.1;
-        } else {
-            // Dla rakiet, które nie trafiły w cel – odwrotność odległości
-            self.fitness = 1.0 / (distance + 1.0);
+            fitness = 1_000.0 / (self.step as f64 + 1.0);
+        }
+        // Jeśli rakieta się rozbiła, nadal chcemy uwzględnić, jak blisko była celu,
+        // ale z nałożoną karą
+        else if self.crashed {
+            fitness *= 0.5;
         }
 
+        self.fitness = fitness;
         self.fitness
     }
 
@@ -60,6 +67,9 @@ impl Rocket {
         if distance < config::TARGET_RADIUS.powi(2) {
             self.hit_target = true;
             self.position = config::TARGET_POS;
+        }
+        if distance < self.min_distance {
+            self.min_distance = distance;
         }
 
         //check screen bounds
